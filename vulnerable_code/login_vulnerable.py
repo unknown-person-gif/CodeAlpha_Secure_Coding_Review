@@ -1,39 +1,28 @@
 import sqlite3
-import bcrypt
 
 
 def login(username, password):
 
-    conn = None
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
 
-    try:
-        conn = sqlite3.connect("users.db")
-        cursor = conn.cursor()
+    # Insecure SQL query
+    query = (
+        "SELECT * FROM users WHERE "
+        "username='%s' AND password='%s'"
+        % (username, password)
+    )
 
-        # Secure parameterized SQL query
-        cursor.execute(
-            "SELECT password_hash FROM users WHERE username = ?",
-            (username,)
-        )
+    cursor.execute(query)
 
-        user = cursor.fetchone()
+    user = cursor.fetchone()
 
-        # Verify hashed password
-        if user and bcrypt.checkpw(
-            password.encode("utf-8"),
-            user[0]
-        ):
-            print("Login Successful!")
+    if user:
+        print("Login Successful!")
+    else:
+        print("Invalid Username or Password")
 
-        else:
-            print("Invalid Username or Password")
-
-    except sqlite3.Error:
-        print("An internal error occurred.")
-
-    finally:
-        if conn is not None:
-            conn.close()
+    conn.close()
 
 
 # Test login
