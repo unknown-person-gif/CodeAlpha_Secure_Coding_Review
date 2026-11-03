@@ -37,4 +37,4 @@ def login(username, password):
 
 
 # Test login
-login("admin", "admin123r")
+login("admin", "admin123")
